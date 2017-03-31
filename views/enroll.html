@@ -1,0 +1,29 @@
+<div  class="login-container">
+  <div class="row">
+    <div class="col-md-12">
+      <div class="form-group">
+          <label id="basic-addon1">Enroll ID</label>
+          <input type="text" ng-model="data.enrollId" class="form-control" placeholder="Enroll ID">
+      </div>
+     </div>
+    <div class="col-md-12">
+      <div class="form-group">
+          <label>Secret</label>
+          <input type="text" ng-model="data.enrollSecret" class="form-control" placeholder="Secret">
+      </div>
+    </div>
+    <div class="col-md-12">
+      <div class="form-group">
+        <div class="checkbox">
+          <label>
+             <input type="checkbox"> Remember me
+          </label>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-12">
+        <div class="form-group text-center">
+          <button class="btn btn-primary btn-md " ng-click="enroll(data)">Enroll</button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+<div class="container add-container">
+    <a href="#!/home">Back</a>
+    <div class='col-lg 12'>
+        <div class='col-lg-6 form-control' style="height:40vh;margin:calc(10% - 20px) auto;width: calc(45%);margin-right: 20px;margin-left:50px;">
+            <div style="display: block;">
+                <label class="new-device-label">Device Make: </label>
+                <input class="form-control new-device" type="text" ng-model="newDevice.make" style="margin-top:15px;width:60%;display:inline">
+                </div>
+            <div style="display: block;">
+                 <label  class="new-device-label"> Device Type: </label>
+                 <input class="form-control new-device" type="text" ng-model="newDevice.type" style="margin-top:15px;width:60%;display:inline"></div>
+            <div style="display: block;">
+                 <label  class="new-device-label">Device Model:</label>
+                  <input class="form-control new-device" type="text" ng-model="newDevice.model" style="margin-top:15px;width:60%;display:inline"></div>
+            <div style="display: block;">
+                 <label  class="new-device-label">Device Serial No :</label>
+                  <input class="form-control new-device" type="text" ng-model="newDevice.serial" style="margin-top:15px;width:60%;display:inline"></div>
+            <button class="btn btn-primary" style="margin-left: calc(45%);margin-top: 15px;" ng-click="addDevice(newDevice)">Add</button>
+
+        </div>
+
+    </div>

@@ -1,0 +1,72 @@
+body {
+    margin: 0px;
+    padding: 0px;
+    background: #457fca;
+    color: #333;
+}
+.login-container {
+    margin: calc(10% - 20px) auto;
+    width: 400px;
+    background-color: #dadfe1;
+    border: 1px solid #bdc3c7;
+    padding: 30px 30px 10px 30px;
+    border-radius: 5px;
+}
+
+
+.menu-item {
+display: block;
+margin:10px;
+}
+.new-device-label{
+
+    width:25%;
+}
+.view-device-label{
+    width:35%;
+    margin: 0px !important; 
+}
+.menu-container{
+    margin: calc(10% - 20px) auto;
+    width: 400px;
+    background-color: #dadfe1;
+    border: 1px solid #bdc3c7;
+    padding: 30px 30px 10px 30px;
+    border-radius: 5px;
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 18px;
+}
+.view-container{
+    background-color: #dadfe1;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+     min-height: calc(100vh - 0px);
+   
+} 
+.add-container{
+     background-color: #dadfe1;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+     min-height: calc(100vh - 0px);
+}
+.assign-container{
+ background-color: #dadfe1;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+ min-height: calc(100vh - 0px);
+}
+.return-container{
+    background-color: #dadfe1;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    text-align: center;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    min-height: calc(100vh - 0px);
+}

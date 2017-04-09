@@ -268,46 +268,49 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 		fmt.Printf("Function is query")
 		return nil, errors.New("Invalid query function name. Expecting \"query\"")
 	}
-	var custName string       // Entities
-	var custAddressKey string //Customer address key to read write in ledger as key value of Address
-	var resp []byte           //response result based on query key
+	var e []Employee
+	bytes, err := stub.GetState(args[0])
+	err = json.Unmarshal(bytes, &e)
+	// var custName string       // Entities
+	// var custAddressKey string //Customer address key to read write in ledger as key value of Address
+	// var resp []byte           //response result based on query key
 
-	if len(args) != 2 {
-		return nil, errors.New("Incorrect number of arguments. Expecting name of the person to query and balance or address")
-	}
+	// if len(args) != 2 {
+	// 	return nil, errors.New("Incorrect number of arguments. Expecting name of the person to query and balance or address")
+	// }
 
-	custName = args[0]
-	//Check query key for Balance and Address
-	if args[1] == "Balance" {
-		custAvailBalbytes, err := stub.GetState(custName)
-		if err != nil {
-			jsonResp := "{\"Error\":\"Failed to get state for " + custName + "\"}"
-			return nil, errors.New(jsonResp)
-		}
-		if custAvailBalbytes == nil {
-			jsonResp := "{\"Error\":\"Nil amount for " + custName + "\"}"
-			return nil, errors.New(jsonResp)
-		}
-		jsonResp := "{\"Name\":\"" + custName + "\",\"Amount\":\"" + string(custAvailBalbytes) + "\"}"
-		fmt.Printf("Query Response:%s\n", jsonResp)
-		resp = custAvailBalbytes
-	} else if args[1] == "Address" {
-		custAddressKey = args[0] + "Add"
-		custAddressbytes, err := stub.GetState(custAddressKey)
-		if err != nil {
-			jsonResp := "{\"Error\":\"Failed to get state for " + custAddressKey + "\"}"
-			return nil, errors.New(jsonResp)
-		}
-		if custAddressbytes == nil {
-			jsonResp := "{\"Error\":\"No address for " + custName + "\"}"
-			return nil, errors.New(jsonResp)
-		}
-		jsonResp := "{\"Name\":\"" + custName + "\",\"Address\":\"" + string(custAddressbytes) + "\"}"
-		fmt.Printf("Query Response:%s\n", jsonResp)
-		resp = custAddressbytes
-	}
+	// custName = args[0]
+	// //Check query key for Balance and Address
+	// if args[1] == "Balance" {
+	// 	custAvailBalbytes, err := stub.GetState(custName)
+	// 	if err != nil {
+	// 		jsonResp := "{\"Error\":\"Failed to get state for " + custName + "\"}"
+	// 		return nil, errors.New(jsonResp)
+	// 	}
+	// 	if custAvailBalbytes == nil {
+	// 		jsonResp := "{\"Error\":\"Nil amount for " + custName + "\"}"
+	// 		return nil, errors.New(jsonResp)
+	// 	}
+	// 	jsonResp := "{\"Name\":\"" + custName + "\",\"Amount\":\"" + string(custAvailBalbytes) + "\"}"
+	// 	fmt.Printf("Query Response:%s\n", jsonResp)
+	// 	resp = custAvailBalbytes
+	// } else if args[1] == "Address" {
+	// 	custAddressKey = args[0] + "Add"
+	// 	custAddressbytes, err := stub.GetState(custAddressKey)
+	// 	if err != nil {
+	// 		jsonResp := "{\"Error\":\"Failed to get state for " + custAddressKey + "\"}"
+	// 		return nil, errors.New(jsonResp)
+	// 	}
+	// 	if custAddressbytes == nil {
+	// 		jsonResp := "{\"Error\":\"No address for " + custName + "\"}"
+	// 		return nil, errors.New(jsonResp)
+	// 	}
+	// 	jsonResp := "{\"Name\":\"" + custName + "\",\"Address\":\"" + string(custAddressbytes) + "\"}"
+	// 	fmt.Printf("Query Response:%s\n", jsonResp)
+	// 	resp = custAddressbytes
+	// }
 
-	return resp, nil
+	return bytes, nil
 }
 
 func main() {

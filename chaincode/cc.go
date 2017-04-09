@@ -1,8 +1,8 @@
-/*GlobalPayment POC v1.1 */
-
+/*Device management*/
 package main
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"strconv"
@@ -14,46 +14,60 @@ import (
 type SimpleChaincode struct {
 }
 
-//Init Method to initialize the state to ledgers
+// Asset to define asset stucture
+type Asset struct {
+	Make     string `json:"make"`
+	Type     string `json:"type"`
+	Model    string `json:"model"`
+	SerialNo string `json:"serialNo"`
+}
+
+// Employee to define employee structure
+type Employee struct {
+	ID     int64    `json:"id"`
+	Name   string   `json:"name"`
+	Assets []string `json:"assets"`
+}
+
+//Init Method to initialize employees and assets
 func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Printf("Init called, initializing chaincode")
 
-	var custName string       //Customer Name
-	var currentBal int        //Customer Balance
-	var custAddress string    //Customer address
-	var custAddressKey string //Customer address key to read write in ledger as key value of address
 	var err error
-
+	var dummyEmp [3]Employee
 	//Error for wrong input
 	if len(args) != 3 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 2 arguments -customer name ,customer current balance and address")
+		return nil, errors.New("Incorrect number of arguments. Expecting 3 employee's data")
 	}
+	var employeeDB string
+	employeeDB = "employees"
 
-	// Initialize the chaincode
-	custName = args[0]
-	currentBal, err = strconv.Atoi(args[1])
-	custAddress = args[2]
-	custAddressKey = args[0] + "Add"
+	//sJSON := `{"k": "v", "t":["str-a","str-b","str-c"]}`
+	//args[0] = `{"id":"1","name":"Nikesh","assets":"[]"}`
+	_ = json.Unmarshal([]byte(args[0]), &dummyEmp[0])
+	_ = json.Unmarshal([]byte(args[1]), &dummyEmp[1])
+	_ = json.Unmarshal([]byte(args[2]), &dummyEmp[2])
+
 	//Validate type for balance
-	if err != nil {
-		return nil, errors.New("Expecting integer value for balance")
-	}
-
-	fmt.Printf("currentBal = %d \n", currentBal)
-	fmt.Printf("customer Address -", custAddress)
+	// if err != nil {
+	// 	return nil, errors.New("Expecting integer value for balance")
+	// }
+	// fmt.Printf("currentBal = %d \n", currentBal)
+	// fmt.Printf("customer Address -", custAddress)
 
 	/* Write the state to the ledger*/
-
+	bytes, err := json.Marshal(dummyEmp)
 	//Writing balance with name key
-	err = stub.PutState(custName, []byte(strconv.Itoa(currentBal)))
+	err = stub.PutState(employeeDB, bytes)
 	if err != nil {
 		return nil, err
 	}
-	//Writing address with (name+'Add') as a key
-	err = stub.PutState(custAddressKey, []byte(custAddress))
+	//GetSTate
+	employeebytes, err := stub.GetState(employeeDB)
 	if err != nil {
 		return nil, err
 	}
+	fmt.Printf(string(employeebytes))
 
 	return nil, nil
 }

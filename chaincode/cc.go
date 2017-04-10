@@ -279,7 +279,7 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	fmt.Println("--------------------------------------------------------------------------------------")
 	fmt.Println(e[0].Name)
 	fmt.Println("--------------------------------------------------------------------------------------")
-	fmt.Println(e[0].Assets)
+	fmt.Println(e[0].Assets[0].SerialNo)
 	fmt.Println("--------------------------------------------------------------------------------------")
 
 	// var custName string       // Entities

@@ -24,9 +24,9 @@ type Asset struct {
 
 // Employee to define employee structure
 type Employee struct {
-	ID     int64    `json:"id"`
-	Name   string   `json:"name"`
-	Assets []string `json:"assets"`
+	ID     int64   `json:"id"`
+	Name   string  `json:"name"`
+	Assets []Asset `json:"assets"`
 }
 
 //Init Method to initialize employees and assets
@@ -281,6 +281,7 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	fmt.Println("--------------------------------------------------------------------------------------")
 	fmt.Println(e[0].Assets)
 	fmt.Println("--------------------------------------------------------------------------------------")
+
 	// var custName string       // Entities
 	// var custAddressKey string //Customer address key to read write in ledger as key value of Address
 	// var resp []byte           //response result based on query key

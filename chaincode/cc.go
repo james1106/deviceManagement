@@ -206,11 +206,18 @@ func (t *SimpleChaincode) delete(stub shim.ChaincodeStubInterface, args []string
 func (t *SimpleChaincode) addAsset(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Printf("Running addAsset")
 
-	// var newAsset Asset
-	// var cuurentAssets []Asset
-	// assetbytes, err := stub.GetState(args[0])
-	// _ = json.Unmarshal([]byte(assetbytes), &cuurentAssets)
-
+	var newAsset Asset
+	_ = json.Unmarshal([]byte(args[0]), &newAsset)
+	var cuurentAssets []Asset
+	assetbytes, err := stub.GetState(args[0])
+	if err != nil {
+		fmt.Printf("error getting current state of assets")
+	}
+	_ = json.Unmarshal([]byte(assetbytes), &cuurentAssets)
+	fmt.Printf("---------------------------------------------------------------------NEW ASSET")
+	fmt.Printf("%+v\n", newAsset)
+	fmt.Printf("--------------------------------------------------------------------- CURRENTASSETS")
+	fmt.Printf("%+v\n", cuurentAssets)
 	//_ = json.Unmarshal([]byte(args[0]), &newAsset)
 	// var custAddressKey string //Customer address key to read write in ledger as key value of address
 	// var err error
@@ -255,10 +262,10 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		// Deletes an customer from its state
 		fmt.Printf("Function is delete")
 		return t.delete(stub, args)
-	} else if function == "updateAddress" {
+	} else if function == "addAsset" {
 		//Update Address
-		fmt.Printf("Function is updated address")
-		//return t.updateAddress(stub, args)
+		fmt.Printf("Function is  add asset")
+		return t.addAsset(stub, args)
 	}
 
 	return nil, errors.New("Received unknown function invocation")
@@ -283,10 +290,10 @@ func (t *SimpleChaincode) Run(stub shim.ChaincodeStubInterface, function string,
 		// Deletes an entity from its state
 		fmt.Printf("Function is delete")
 		return t.delete(stub, args)
-	} else if function == "updateAddress" {
+	} else if function == "addAsset" {
 		//Update Address
-		fmt.Printf("Function is updated address")
-		//return t.updateAddress(stub, args)
+		fmt.Printf("Function is add asset")
+		return t.addAsset(stub, args)
 	}
 
 	return nil, errors.New("Received unknown function invocation")

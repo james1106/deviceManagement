@@ -285,7 +285,7 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	fmt.Println("--------------------------------------------------------------------------------------")
 	fmt.Println(e[2].Assets[0].SerialNo)
 	fmt.Println("--------------------------------------------------------------------------------------")
-	fmt.Println(e[2].Assets[2].SerialNo)
+	fmt.Println(e[2].Assets[1].SerialNo)
 	// var custName string       // Entities
 	// var custAddressKey string //Customer address key to read write in ledger as key value of Address
 	// var resp []byte           //response result based on query key

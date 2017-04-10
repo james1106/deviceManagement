@@ -275,7 +275,12 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	}
 	err = json.Unmarshal(bytes, &e)
 	fmt.Println("--------------------------------------------------------------------------------------")
-	fmt.Println(e)
+	fmt.Println(e[0])
+	fmt.Println("--------------------------------------------------------------------------------------")
+	fmt.Println(e[0].Name)
+	fmt.Println("--------------------------------------------------------------------------------------")
+	fmt.Println(e[0].Assets)
+	fmt.Println("--------------------------------------------------------------------------------------")
 	// var custName string       // Entities
 	// var custAddressKey string //Customer address key to read write in ledger as key value of Address
 	// var resp []byte           //response result based on query key

@@ -35,39 +35,39 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 
 	var err error
 	var dummyEmp [3]Employee
+	var dummyAssets [3]Asset
 	//Error for wrong input
-	if len(args) != 3 {
+	if len(args) != 6 {
 		return nil, errors.New("Incorrect number of arguments. Expecting 3 employee's data")
 	}
-	var employeeDB string
-	employeeDB = "employees"
-
-	//sJSON := `{"k": "v", "t":["str-a","str-b","str-c"]}`
-	//args[0] = `{"id":"1","name":"Nikesh","assets":"[]"}`
+	var employeeKey string
+	var assetKey string
+	employeeKey = "employees"
+	assetKey = "assets"
+	//Adding initial employees to Employee structure
 	_ = json.Unmarshal([]byte(args[0]), &dummyEmp[0])
 	_ = json.Unmarshal([]byte(args[1]), &dummyEmp[1])
 	_ = json.Unmarshal([]byte(args[2]), &dummyEmp[2])
 
-	//Validate type for balance
-	// if err != nil {
-	// 	return nil, errors.New("Expecting integer value for balance")
-	// }
-	// fmt.Printf("currentBal = %d \n", currentBal)
-	// fmt.Printf("customer Address -", custAddress)
+	//Addign initial assets to Asset structure
+	_ = json.Unmarshal([]byte(args[3]), &dummyAssets[0])
+	_ = json.Unmarshal([]byte(args[4]), &dummyAssets[1])
+	_ = json.Unmarshal([]byte(args[5]), &dummyAssets[2])
 
-	/* Write the state to the ledger*/
-	bytes, err := json.Marshal(dummyEmp)
-	//Writing balance with name key
-	err = stub.PutState(employeeDB, bytes)
+	/* Write the employee with "employees" key state to the ledger*/
+	empbytes, err := json.Marshal(dummyEmp)
+	//Writing
+	err = stub.PutState(employeeKey, empbytes)
 	if err != nil {
 		return nil, err
 	}
-	//GetSTate
-	employeebytes, err := stub.GetState(employeeDB)
+	/* Write the assets with "assets" key state to the ledger*/
+	assetbytes, err := json.Marshal(dummyAssets)
+	//Writing
+	err = stub.PutState(assetKey, assetbytes)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf(string(employeebytes))
 
 	return nil, nil
 }
@@ -176,27 +176,59 @@ func (t *SimpleChaincode) delete(stub shim.ChaincodeStubInterface, args []string
 }
 
 //Updates the address
-func (t *SimpleChaincode) updateAddress(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	fmt.Printf("Running updateAddress")
+// func (t *SimpleChaincode) updateAddress(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+// 	fmt.Printf("Running updateAddress")
 
-	var custAddress string
-	var custAddressKey string //Customer address key to read write in ledger as key value of address
-	var err error
+// 	var custAddress string
+// 	var custAddressKey string //Customer address key to read write in ledger as key value of address
+// 	var err error
 
-	//Error for wrong input
-	if len(args) != 2 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 2- customer name and new address")
-	}
-	custAddress = args[1]
-	custAddressKey = args[0] + "Add"
+// 	//Error for wrong input
+// 	if len(args) != 2 {
+// 		return nil, errors.New("Incorrect number of arguments. Expecting 2- customer name and new address")
+// 	}
+// 	custAddress = args[1]
+// 	custAddressKey = args[0] + "Add"
 
-	fmt.Printf("new address :", custAddress)
+// 	fmt.Printf("new address :", custAddress)
 
-	// Write the state back to the ledger with new address
-	err = stub.PutState(custAddressKey, []byte(custAddress))
-	if err != nil {
-		return nil, err
-	}
+// 	// Write the state back to the ledger with new address
+// 	err = stub.PutState(custAddressKey, []byte(custAddress))
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	return nil, nil
+
+// }
+
+//Updates the address
+func (t *SimpleChaincode) addAsset(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	fmt.Printf("Running addAsset")
+
+	// var newAsset Asset
+	// var cuurentAssets []Asset
+	// assetbytes, err := stub.GetState(args[0])
+	// _ = json.Unmarshal([]byte(assetbytes), &cuurentAssets)
+
+	//_ = json.Unmarshal([]byte(args[0]), &newAsset)
+	// var custAddressKey string //Customer address key to read write in ledger as key value of address
+	// var err error
+
+	// //Error for wrong input
+	// if len(args) != 2 {
+	// 	return nil, errors.New("Incorrect number of arguments. Expecting 2- customer name and new address")
+	// }
+	// custAddress = args[1]
+	// custAddressKey = args[0] + "Add"
+
+	// fmt.Printf("new address :", custAddress)
+
+	// // Write the state back to the ledger with new address
+	// err = stub.PutState(custAddressKey, []byte(custAddress))
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	return nil, nil
 
@@ -226,7 +258,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 	} else if function == "updateAddress" {
 		//Update Address
 		fmt.Printf("Function is updated address")
-		return t.updateAddress(stub, args)
+		//return t.updateAddress(stub, args)
 	}
 
 	return nil, errors.New("Received unknown function invocation")
@@ -254,7 +286,7 @@ func (t *SimpleChaincode) Run(stub shim.ChaincodeStubInterface, function string,
 	} else if function == "updateAddress" {
 		//Update Address
 		fmt.Printf("Function is updated address")
-		return t.updateAddress(stub, args)
+		//return t.updateAddress(stub, args)
 	}
 
 	return nil, errors.New("Received unknown function invocation")
@@ -268,24 +300,38 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 		fmt.Printf("Function is query")
 		return nil, errors.New("Invalid query function name. Expecting \"query\"")
 	}
-	var e []Employee
-	bytes, err := stub.GetState(args[0])
-	if err != nil {
-		fmt.Println("error wrtting to state")
+	//get Employees
+	if args[0] == "employees" {
+		var e []Employee
+		empbytes, err := stub.GetState(args[0])
+		if err != nil {
+			fmt.Println("error getting employees from state")
+		}
+		err = json.Unmarshal(empbytes, &e)
+		return empbytes, nil
+		// fmt.Println("--------------------------------------------------------------------------------------")
+		// fmt.Println(e[0])
+		// fmt.Println("--------------------------------------------------------------------------------------")
+		// fmt.Println(e[0].Name)
+		// fmt.Println("--------------------------------------------------------------------------------------")
+		// fmt.Println(e[0].Assets[0].SerialNo)
+		// fmt.Println("--------------------------------------------------------------------------------------")
+		// fmt.Println(e[1].Assets[0].SerialNo)
+		// fmt.Println("--------------------------------------------------------------------------------------")
+		// fmt.Println(e[2].Assets[0].SerialNo)
+		// fmt.Println("--------------------------------------------------------------------------------------")
+		// fmt.Println(e[2].Assets[1].SerialNo)
+	} else if args[0] == "asset" {
+		//get Assets
+		var a []Asset
+		assetbytes, err := stub.GetState(args[0])
+		if err != nil {
+			fmt.Println("error getting assets from state")
+		}
+		err = json.Unmarshal(assetbytes, &a)
+		return assetbytes, nil
 	}
-	err = json.Unmarshal(bytes, &e)
-	fmt.Println("--------------------------------------------------------------------------------------")
-	fmt.Println(e[0])
-	fmt.Println("--------------------------------------------------------------------------------------")
-	fmt.Println(e[0].Name)
-	fmt.Println("--------------------------------------------------------------------------------------")
-	fmt.Println(e[0].Assets[0].SerialNo)
-	fmt.Println("--------------------------------------------------------------------------------------")
-	fmt.Println(e[1].Assets[0].SerialNo)
-	fmt.Println("--------------------------------------------------------------------------------------")
-	fmt.Println(e[2].Assets[0].SerialNo)
-	fmt.Println("--------------------------------------------------------------------------------------")
-	fmt.Println(e[2].Assets[1].SerialNo)
+
 	// var custName string       // Entities
 	// var custAddressKey string //Customer address key to read write in ledger as key value of Address
 	// var resp []byte           //response result based on query key
@@ -325,7 +371,7 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	// 	resp = custAddressbytes
 	// }
 
-	return bytes, nil
+	return nil, nil
 }
 
 func main() {

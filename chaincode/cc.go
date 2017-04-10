@@ -209,7 +209,7 @@ func (t *SimpleChaincode) addAsset(stub shim.ChaincodeStubInterface, args []stri
 	var newAsset Asset
 	_ = json.Unmarshal([]byte(args[0]), &newAsset)
 	var cuurentAssets []Asset
-	assetbytes, err := stub.GetState(args[0])
+	assetbytes, err := stub.GetState("assets")
 	if err != nil {
 		fmt.Printf("error getting current state of assets")
 	}

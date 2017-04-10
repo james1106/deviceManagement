@@ -270,6 +270,9 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 	}
 	var e []Employee
 	bytes, err := stub.GetState(args[0])
+	if err != nil {
+		fmt.Println("error wrtting to state")
+	}
 	err = json.Unmarshal(bytes, &e)
 	fmt.Println("--------------------------------------------------------------------------------------")
 	fmt.Println(e)

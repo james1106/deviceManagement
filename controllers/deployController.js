@@ -172,9 +172,6 @@ app.controller('deploymentController', function ($scope, $http) {
         ];
 
 
-
-
-
         //Invoke CC address
         $scope.deploySpec = {
             "jsonrpc": "2.0",
@@ -182,14 +179,14 @@ app.controller('deploymentController', function ($scope, $http) {
             "params": {
                 "type": 1,
                 "chaincodeID": {
-                    "path": "https://github.com/nik0405/GlobalPayments1.1"
+                    "path": "https://github.com/nik0405/deviceManagement/chaincode"
                 },
                 "ctorMsg": {
                     "function": "init",
-                    "args": ['{"id": "1","name": "SAM","assets": ["Dell","Laptop","Latitude 5470","GEN1LAP001"]}',
-                        '{"id": "2","name": "RON","assets": ["Apple","Laptop","Macbook Air","GEN1LAP002"]}',
-                        '{"id": "3","name": "TOM","assets": ["Apple","Laptop","Macbook Pro","GEN1LAP003"]}'
-                    ]
+                    "args": [JSON.stringify({id: '1',name: 'SAM',assets: ['Dell','Laptop','Latitude 5470','GEN1LAP001']}),
+                        JSON.stringify({id: '2',name: 'RON',assets: ['Apple','Laptop','Macbook Air','GEN1LAP002']}),
+                        JSON.stringify({id: '3',name: 'TOM',assets: ['Apple','Laptop','Macbook Pro','GEN1LAP003']})
+                     ]
                 },
                 "secureContext": "user_type1_0"
             },

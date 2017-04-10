@@ -268,12 +268,11 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 		fmt.Printf("Function is query")
 		return nil, errors.New("Invalid query function name. Expecting \"query\"")
 	}
-	//var e []Employee
+	var e []Employee
 	bytes, err := stub.GetState(args[0])
-	if err != nil {
-		fmt.Printf("Function is query")
-	}
-	//err = json.Unmarshal(bytes, &e)
+	err = json.Unmarshal(bytes, &e)
+	fmt.Println("--------------------------------------------------------------------------------------")
+	fmt.Println(e)
 	// var custName string       // Entities
 	// var custAddressKey string //Customer address key to read write in ledger as key value of Address
 	// var resp []byte           //response result based on query key

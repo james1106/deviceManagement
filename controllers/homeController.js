@@ -41,7 +41,7 @@ $scope.send = function(){
             },
             "id": 0
         }
-         $http.post('https://81b378259d304e18a7a593d4ebfc0590-vp0.us.blockchain.ibm.com:5001/chaincode', $scope.deploySpec).then(function (response) {
+         $http.post('https://71af638568864f959f03a41d0938afbd-vp0.us.blockchain.ibm.com:5002/chaincode', $scope.deploySpec).then(function (response) {
             if (response.status === 200) {
                console.log(response)
                

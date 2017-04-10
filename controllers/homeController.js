@@ -34,8 +34,12 @@ $scope.send = function(){
                     "function": "init",
                     "args": [JSON.stringify({id: 1,name: 'SAM',assets: [{make:'Dell',type:'Laptop',model:'Latitude 5470',serialNo:'GEN1LAP001'}]}),
                         JSON.stringify({id: 2,name: 'RON',assets: [{make:'Apple',type:'Laptop',model:'Macbook Air',serialNo:'GEN1LAP002'}]}),
-                        JSON.stringify({id: 3,name: 'TOM',assets: [{make:'Apple',type:'Laptop',model:'Macbook Pro',serialNo:'GEN1LAP003'},{make:'Apple',type:'Laptop',model:'Macbook Pro',serialNo:'GEN1LAP004'}]})
+                        JSON.stringify({id: 3,name: 'TOM',assets: [{make:'Apple',type:'Laptop',model:'Macbook Pro',serialNo:'GEN1LAP003'},{make:'Apple',type:'Laptop',model:'Macbook Pro',serialNo:'GEN1LAP004'}]}),
+                          JSON.stringify({make:'Dell',type:'Laptop',model:'Latitude 5470',serialNo:'GEN1LAP001'}),
+                            JSON.stringify({make:'Apple',type:'Laptop',model:'Macbook Air',serialNo:'GEN1LAP002'}),
+                       JSON.stringify({make:'Apple',type:'Laptop',model:'Macbook Pro',serialNo:'GEN1LAP003'})
                      ]
+
                 },
                 "secureContext": "user_type1_0"
             },

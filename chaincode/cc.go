@@ -321,7 +321,7 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 		// fmt.Println(e[2].Assets[0].SerialNo)
 		// fmt.Println("--------------------------------------------------------------------------------------")
 		// fmt.Println(e[2].Assets[1].SerialNo)
-	} else if args[0] == "asset" {
+	} else if args[0] == "assets" {
 		//get Assets
 		var a []Asset
 		assetbytes, err := stub.GetState(args[0])

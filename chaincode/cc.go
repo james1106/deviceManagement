@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"strconv"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 )
@@ -20,11 +19,12 @@ type Asset struct {
 	Type     string `json:"type"`
 	Model    string `json:"model"`
 	SerialNo string `json:"serialNo"`
+	EmpID    int    `json:"empId"`
 }
 
 // Employee to define employee structure
 type Employee struct {
-	ID     int64   `json:"id"`
+	ID     int     `json:"id"`
 	Name   string  `json:"name"`
 	Assets []Asset `json:"assets"`
 }
@@ -59,6 +59,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	//Writing
 	err = stub.PutState(employeeKey, empbytes)
 	if err != nil {
+		fmt.Println("Error putting employees to state ledger")
 		return nil, err
 	}
 	/* Write the assets with "assets" key state to the ledger*/
@@ -66,49 +67,71 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 	//Writing
 	err = stub.PutState(assetKey, assetbytes)
 	if err != nil {
+		fmt.Println("Error putting assets to state ledger")
 		return nil, err
 	}
 
 	return nil, nil
 }
 
-//Credit Function
-//Expecting customer name and credit amount
-func (t *SimpleChaincode) credit(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	fmt.Printf("Running credit")
+//Assign function , expecting employee and asset
+func (t *SimpleChaincode) assignAsset(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	fmt.Printf("Running assign to employee")
 
-	var custName string  // Customer Name
-	var currentBal int   //Customer Balance  --Aval->currentBal
-	var creditAmount int //Credit Amount
 	var err error
+	var selectedEmp Employee
+	var employeeContainer []Employee
+	var selectedAsset Asset
+	var assetContainer []Asset
+	var matchedEmpKey int
+	//store selected asset and selected employee
+	_ = json.Unmarshal([]byte(args[0]), selectedEmp)
+	_ = json.Unmarshal([]byte(args[1]), selectedAsset)
 
-	//Error for wrong input
-	if len(args) != 2 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 2- customer name and credit amount")
-	}
-
-	custName = args[0]
-
-	// Get the current state from the ledger
-	// TODO: will be nice to have a GetAllState call to ledger
-
-	custCurrentBalbytes, err := stub.GetState(custName)
+	//Get employee and asset ist from state
+	emplContainerbytes, err := stub.GetState("employees")
 	if err != nil {
 		return nil, errors.New("Failed to get state")
 	}
-	if custCurrentBalbytes == nil {
-		return nil, errors.New("Entity not found")
-	}
-	currentBal, _ = strconv.Atoi(string(custCurrentBalbytes))
-
-	// Credit Execution
-	creditAmount, err = strconv.Atoi(args[1])
-	currentBal = currentBal + creditAmount
-	fmt.Printf("currentBal = %d\n", currentBal)
-
-	// Write the state back to the ledger
-	err = stub.PutState(custName, []byte(strconv.Itoa(currentBal)))
+	assetContainerbytes, err := stub.GetState("assets")
 	if err != nil {
+		return nil, errors.New("Failed to get state")
+	}
+
+	//convert back from bytes to perform operations
+	_ = json.Unmarshal([]byte(emplContainerbytes), employeeContainer)
+	_ = json.Unmarshal([]byte(assetContainerbytes), assetContainer)
+
+	//assigning selected asset to selected employee
+	for i := 0; i < len(employeeContainer); i++ {
+		if employeeContainer[i].ID == selectedEmp.ID {
+			selectedAsset.EmpID = employeeContainer[i].ID
+			employeeContainer[i].Assets = append(employeeContainer[i].Assets, selectedAsset)
+			matchedEmpKey = i
+		}
+	}
+	//Update the assetContainer with emp key
+	for i := 0; i < len(assetContainer); i++ {
+		if assetContainer[i].SerialNo == selectedAsset.SerialNo {
+			assetContainer[i].EmpID = employeeContainer[matchedEmpKey].ID
+		}
+	}
+
+	/* Write the employee with "employees" key state to the ledger*/
+	empbytes, err := json.Marshal(employeeContainer)
+	//Writing
+	err = stub.PutState("employees", empbytes)
+	if err != nil {
+		fmt.Println("Error putting employees to state ledger")
+		return nil, err
+	}
+
+	/* Write the assets with "assets" key state to the ledger*/
+	assetbytes, err := json.Marshal(assetContainer)
+	//Writing
+	err = stub.PutState("assets", assetbytes)
+	if err != nil {
+		fmt.Println("Error putting assets to state ledger")
 		return nil, err
 	}
 
@@ -116,126 +139,119 @@ func (t *SimpleChaincode) credit(stub shim.ChaincodeStubInterface, args []string
 }
 
 //Expecting customer name and credit amount
-func (t *SimpleChaincode) debit(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	fmt.Printf("Running credit")
+func (t *SimpleChaincode) returnAsset(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
+	fmt.Printf("Running return from emplyee")
 
-	var custName string // Customer Name
-	var currentBal int  //Customer Balance
-	var debitAmount int
 	var err error
+	var selectedEmp Employee
+	var employeeContainer []Employee
+	var selectedAsset Asset
+	var assetContainer []Asset
+	var matchedEmpAssetKey int
+	var matchedEmpKey int
+	//store selected asset and selected employee
+	_ = json.Unmarshal([]byte(args[0]), selectedEmp)
+	_ = json.Unmarshal([]byte(args[1]), selectedAsset)
 
-	if len(args) != 2 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 2")
-	}
-
-	custName = args[0]
-
-	// Get the state from the ledger
-	// TODO: will be nice to have a GetAllState call to ledger
-	custCurrentBalbytes, err := stub.GetState(custName)
+	//Get employee and asset ist from state
+	emplContainerbytes, err := stub.GetState("employees")
 	if err != nil {
 		return nil, errors.New("Failed to get state")
 	}
-	if custCurrentBalbytes == nil {
-		return nil, errors.New("Entity not found")
-	}
-	currentBal, _ = strconv.Atoi(string(custCurrentBalbytes))
-
-	// Debit Execution
-	debitAmount, err = strconv.Atoi(args[1])
-	currentBal = currentBal - debitAmount
-
-	fmt.Printf("currentBal = %d\n", currentBal)
-
-	// Write the state back to the ledger
-	err = stub.PutState(custName, []byte(strconv.Itoa(currentBal)))
+	assetContainerbytes, err := stub.GetState("assets")
 	if err != nil {
+		return nil, errors.New("Failed to get state")
+	}
+
+	//convert back from bytes to perform operations
+	_ = json.Unmarshal([]byte(emplContainerbytes), employeeContainer)
+	_ = json.Unmarshal([]byte(assetContainerbytes), assetContainer)
+
+	//finding the key of the selected asset to be removed from the selected employee
+	for i := 0; i < len(employeeContainer); i++ {
+		if employeeContainer[i].ID == selectedEmp.ID {
+			matchedEmpKey = i
+			for j := 0; j < len(employeeContainer[i].Assets); j++ {
+				if selectedAsset.SerialNo == employeeContainer[i].Assets[j].SerialNo {
+					matchedEmpAssetKey = j
+					break
+				}
+			}
+
+		}
+	}
+	/*REMOVE the asset from the employee by swapping it to the last element then popping out the last element from the array
+	Delete without preserving order
+	a[i] = a[len(a)-1]
+	a = a[:len(a)-1]*/
+	employeeContainer[matchedEmpKey].Assets[matchedEmpAssetKey] = employeeContainer[matchedEmpKey].Assets[len(employeeContainer[matchedEmpKey].Assets)-1]
+	employeeContainer[matchedEmpKey].Assets = employeeContainer[matchedEmpKey].Assets[:len(employeeContainer[matchedEmpKey].Assets)-1]
+
+	//Also remove the emp id relation from the asset
+	for i := 0; i < len(assetContainer); i++ {
+		if assetContainer[i].SerialNo == selectedAsset.SerialNo {
+			assetContainer[i].EmpID = 0
+		}
+	}
+
+	/* Write the updated employee with "employees" key state to the ledger*/
+	empbytes, err := json.Marshal(employeeContainer)
+	//Writing
+	err = stub.PutState("employees", empbytes)
+	if err != nil {
+		fmt.Println("Error putting employees to state ledger")
+		return nil, err
+	}
+
+	/* Write the updated assets with "assets" key state to the ledger*/
+	assetbytes, err := json.Marshal(assetContainer)
+	//Writing
+	err = stub.PutState("assets", assetbytes)
+	if err != nil {
+		fmt.Println("Error putting assets to state ledger")
 		return nil, err
 	}
 
 	return nil, nil
 }
 
-// Deletes a customer from state
-func (t *SimpleChaincode) delete(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-	fmt.Printf("Running deletion of customer")
-
-	if len(args) != 1 {
-		return nil, errors.New("Incorrect number of arguments. Expecting 1 customer name")
-	}
-
-	cust := args[0]
-
-	// Delete the key from the state in ledger
-	err := stub.DelState(cust)
-	if err != nil {
-		return nil, errors.New("Failed to delete state")
-	}
-
-	return nil, nil
-}
-
-//Updates the address
-// func (t *SimpleChaincode) updateAddress(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
-// 	fmt.Printf("Running updateAddress")
-
-// 	var custAddress string
-// 	var custAddressKey string //Customer address key to read write in ledger as key value of address
-// 	var err error
-
-// 	//Error for wrong input
-// 	if len(args) != 2 {
-// 		return nil, errors.New("Incorrect number of arguments. Expecting 2- customer name and new address")
-// 	}
-// 	custAddress = args[1]
-// 	custAddressKey = args[0] + "Add"
-
-// 	fmt.Printf("new address :", custAddress)
-
-// 	// Write the state back to the ledger with new address
-// 	err = stub.PutState(custAddressKey, []byte(custAddress))
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	return nil, nil
-
-// }
-
-//Updates the address
+//Add assets to system
 func (t *SimpleChaincode) addAsset(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Printf("Running addAsset")
 
 	var newAsset Asset
+	var assets []Asset
+
+	//New asset
 	_ = json.Unmarshal([]byte(args[0]), &newAsset)
-	var cuurentAssets []Asset
+	fmt.Printf("--------------------------------------NEW ASSET----------------------------------------")
+	fmt.Printf("%+v\n", newAsset)
+
+	//getting current assets
+	fmt.Printf("-------------------------------------CURRENTASSETS-------------------------------------")
 	assetbytes, err := stub.GetState("assets")
 	if err != nil {
 		fmt.Printf("error getting current state of assets")
 	}
-	_ = json.Unmarshal([]byte(assetbytes), &cuurentAssets)
-	fmt.Printf("---------------------------------------------------------------------NEW ASSET")
-	fmt.Printf("%+v\n", newAsset)
-	fmt.Printf("--------------------------------------------------------------------- CURRENTASSETS")
-	fmt.Printf("%+v\n", cuurentAssets)
-	//_ = json.Unmarshal([]byte(args[0]), &newAsset)
-	// var custAddressKey string //Customer address key to read write in ledger as key value of address
-	// var err error
+	_ = json.Unmarshal([]byte(assetbytes), &assets)
+	fmt.Printf("%+v\n", assets)
 
-	// //Error for wrong input
-	// if len(args) != 2 {
-	// 	return nil, errors.New("Incorrect number of arguments. Expecting 2- customer name and new address")
-	// }
-	// custAddress = args[1]
-	// custAddressKey = args[0] + "Add"
+	//Updating assets
+	fmt.Printf("--------------------------------------Updated ASSETS-----------------------------------")
+	assets = append(assets, newAsset)
+	fmt.Printf("%+v\n", assets)
 
-	// fmt.Printf("new address :", custAddress)
-
-	// // Write the state back to the ledger with new address
-	// err = stub.PutState(custAddressKey, []byte(custAddress))
-	// if err != nil {
-	// 	return nil, err
-	// }
+	//Marshalling the string back to bytes to store in state
+	updatedassetbytes, err := json.Marshal(assets)
+	if err != nil {
+		fmt.Println("Erro converting updated assets to bytes")
+	}
+	//Put it back to state assets
+	err = stub.PutState("assets", updatedassetbytes)
+	if err != nil {
+		fmt.Println("Error updating the assets to ledger")
+		return nil, err
+	}
 
 	return nil, nil
 
@@ -247,23 +263,19 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 	fmt.Printf("Invoke called, determining function")
 
 	// Handle different functions
-	if function == "credit" {
-		// Transaction makes a credit to the customer
-		fmt.Printf("Function is credit")
-		return t.credit(stub, args)
-	} else if function == "debit" {
-		// Transaction makes a debit from the customer
+	if function == "assignAsset" {
+		// Transaction makes an assignment of assets
+		fmt.Printf("Function is assignment of assets")
+		return t.assignAsset(stub, args)
+	} else if function == "returnAsset" {
+		// Transaction makes a return of assets
 		fmt.Printf("Function is debit")
-		return t.debit(stub, args)
+		return t.returnAsset(stub, args)
 	} else if function == "init" {
 		fmt.Printf("Function is init")
 		return t.Init(stub, function, args)
-	} else if function == "delete" {
-		// Deletes an customer from its state
-		fmt.Printf("Function is delete")
-		return t.delete(stub, args)
 	} else if function == "addAsset" {
-		//Update Address
+		//Add new assets to the system
 		fmt.Printf("Function is  add asset")
 		return t.addAsset(stub, args)
 	}
@@ -275,23 +287,19 @@ func (t *SimpleChaincode) Run(stub shim.ChaincodeStubInterface, function string,
 	fmt.Printf("Run called, passing through to Invoke (same function)")
 
 	// Handle different functions
-	if function == "credit" {
-		// Transaction makes a credit to the customer
-		fmt.Printf("Function is credit")
-		return t.credit(stub, args)
-	} else if function == "debit" {
-		// Transaction makes a debit from the customer
-		fmt.Printf("Function is debit")
-		return t.debit(stub, args)
+	if function == "assignAsset" {
+		// Transaction makes an assignment of assets
+		fmt.Printf("Function is assignment of assets")
+		return t.assignAsset(stub, args)
+	} else if function == "returnAsset" {
+		// Transaction makes a return of assets
+		fmt.Printf("Function is return of assets")
+		return t.returnAsset(stub, args)
 	} else if function == "init" {
 		fmt.Printf("Function is init")
 		return t.Init(stub, function, args)
-	} else if function == "delete" {
-		// Deletes an entity from its state
-		fmt.Printf("Function is delete")
-		return t.delete(stub, args)
 	} else if function == "addAsset" {
-		//Update Address
+		//Add new assets to the system
 		fmt.Printf("Function is add asset")
 		return t.addAsset(stub, args)
 	}
@@ -316,18 +324,7 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 		}
 		err = json.Unmarshal(empbytes, &e)
 		return empbytes, nil
-		// fmt.Println("--------------------------------------------------------------------------------------")
-		// fmt.Println(e[0])
-		// fmt.Println("--------------------------------------------------------------------------------------")
-		// fmt.Println(e[0].Name)
-		// fmt.Println("--------------------------------------------------------------------------------------")
-		// fmt.Println(e[0].Assets[0].SerialNo)
-		// fmt.Println("--------------------------------------------------------------------------------------")
-		// fmt.Println(e[1].Assets[0].SerialNo)
-		// fmt.Println("--------------------------------------------------------------------------------------")
-		// fmt.Println(e[2].Assets[0].SerialNo)
-		// fmt.Println("--------------------------------------------------------------------------------------")
-		// fmt.Println(e[2].Assets[1].SerialNo)
+
 	} else if args[0] == "assets" {
 		//get Assets
 		var a []Asset
@@ -338,45 +335,6 @@ func (t *SimpleChaincode) Query(stub shim.ChaincodeStubInterface, function strin
 		err = json.Unmarshal(assetbytes, &a)
 		return assetbytes, nil
 	}
-
-	// var custName string       // Entities
-	// var custAddressKey string //Customer address key to read write in ledger as key value of Address
-	// var resp []byte           //response result based on query key
-
-	// if len(args) != 2 {
-	// 	return nil, errors.New("Incorrect number of arguments. Expecting name of the person to query and balance or address")
-	// }
-
-	// custName = args[0]
-	// //Check query key for Balance and Address
-	// if args[1] == "Balance" {
-	// 	custAvailBalbytes, err := stub.GetState(custName)
-	// 	if err != nil {
-	// 		jsonResp := "{\"Error\":\"Failed to get state for " + custName + "\"}"
-	// 		return nil, errors.New(jsonResp)
-	// 	}
-	// 	if custAvailBalbytes == nil {
-	// 		jsonResp := "{\"Error\":\"Nil amount for " + custName + "\"}"
-	// 		return nil, errors.New(jsonResp)
-	// 	}
-	// 	jsonResp := "{\"Name\":\"" + custName + "\",\"Amount\":\"" + string(custAvailBalbytes) + "\"}"
-	// 	fmt.Printf("Query Response:%s\n", jsonResp)
-	// 	resp = custAvailBalbytes
-	// } else if args[1] == "Address" {
-	// 	custAddressKey = args[0] + "Add"
-	// 	custAddressbytes, err := stub.GetState(custAddressKey)
-	// 	if err != nil {
-	// 		jsonResp := "{\"Error\":\"Failed to get state for " + custAddressKey + "\"}"
-	// 		return nil, errors.New(jsonResp)
-	// 	}
-	// 	if custAddressbytes == nil {
-	// 		jsonResp := "{\"Error\":\"No address for " + custName + "\"}"
-	// 		return nil, errors.New(jsonResp)
-	// 	}
-	// 	jsonResp := "{\"Name\":\"" + custName + "\",\"Address\":\"" + string(custAddressbytes) + "\"}"
-	// 	fmt.Printf("Query Response:%s\n", jsonResp)
-	// 	resp = custAddressbytes
-	// }
 
 	return nil, nil
 }

@@ -109,6 +109,8 @@ func (t *SimpleChaincode) assignAsset(stub shim.ChaincodeStubInterface, args []s
 
 	//assigning selected asset to selected employee
 	for i := 0; i < len(employeeContainer); i++ {
+		fmt.Printf("---------------------employee id---------------%d--------", employeeContainer[i].ID)
+		fmt.Printf("---------------------selected employee id---------------%d--------", selectedEmp.ID)
 		if employeeContainer[i].ID == selectedEmp.ID {
 			selectedAsset.EmpID = employeeContainer[i].ID
 			employeeContainer[i].Assets = append(employeeContainer[i].Assets, selectedAsset)

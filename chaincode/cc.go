@@ -100,8 +100,8 @@ func (t *SimpleChaincode) assignAsset(stub shim.ChaincodeStubInterface, args []s
 	}
 
 	//convert back from bytes to perform operations
-	_ = json.Unmarshal([]byte(emplContainerbytes), employeeContainer)
-	_ = json.Unmarshal([]byte(assetContainerbytes), assetContainer)
+	_ = json.Unmarshal([]byte(emplContainerbytes), &employeeContainer)
+	_ = json.Unmarshal([]byte(assetContainerbytes), &assetContainer)
 	fmt.Printf("-------------------------------------- CURRENT employeeContainer----------------------------------------")
 	fmt.Printf("%+v\n", employeeContainer)
 	fmt.Printf("-------------------------------------- CURRENT ASET CONTAINER----------------------------------------")

@@ -77,6 +77,7 @@ func (t *SimpleChaincode) Init(stub shim.ChaincodeStubInterface, function string
 //Assign function , expecting employee and asset
 func (t *SimpleChaincode) assignAsset(stub shim.ChaincodeStubInterface, args []string) ([]byte, error) {
 	fmt.Printf("Running assign to employee")
+	fmt.Printf("--------------------------------------ASSIGN ASSET METHOD----------------------------------------")
 
 	var err error
 	var selectedEmp Employee
@@ -101,12 +102,18 @@ func (t *SimpleChaincode) assignAsset(stub shim.ChaincodeStubInterface, args []s
 	//convert back from bytes to perform operations
 	_ = json.Unmarshal([]byte(emplContainerbytes), employeeContainer)
 	_ = json.Unmarshal([]byte(assetContainerbytes), assetContainer)
+	fmt.Printf("-------------------------------------- CURRENT employeeContainer----------------------------------------")
+	fmt.Printf("%+v\n", employeeContainer)
+	fmt.Printf("-------------------------------------- CURRENT ASET CONTAINER----------------------------------------")
+	fmt.Printf("%+v\n", assetContainer)
 
 	//assigning selected asset to selected employee
 	for i := 0; i < len(employeeContainer); i++ {
 		if employeeContainer[i].ID == selectedEmp.ID {
 			selectedAsset.EmpID = employeeContainer[i].ID
 			employeeContainer[i].Assets = append(employeeContainer[i].Assets, selectedAsset)
+			fmt.Printf("-------------------------------------- AFTER UPDATING EMPLOYEE CONTAINER----------------------------------------")
+			fmt.Printf("%+v\n", employeeContainer)
 			matchedEmpKey = i
 		}
 	}
@@ -116,6 +123,10 @@ func (t *SimpleChaincode) assignAsset(stub shim.ChaincodeStubInterface, args []s
 			assetContainer[i].EmpID = employeeContainer[matchedEmpKey].ID
 		}
 	}
+	fmt.Printf("-------------------------------------- UPDATED employeeContainer----------------------------------------")
+	fmt.Printf("%+v\n", employeeContainer)
+	fmt.Printf("-------------------------------------- UPDATED ASET CONTAINER----------------------------------------")
+	fmt.Printf("%+v\n", assetContainer)
 
 	/* Write the employee with "employees" key state to the ledger*/
 	empbytes, err := json.Marshal(employeeContainer)

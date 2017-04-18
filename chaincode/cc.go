@@ -88,6 +88,8 @@ func (t *SimpleChaincode) assignAsset(stub shim.ChaincodeStubInterface, args []s
 	//store selected asset and selected employee
 	_ = json.Unmarshal([]byte(args[0]), selectedEmp)
 	_ = json.Unmarshal([]byte(args[1]), selectedAsset)
+	fmt.Printf("-------------------------------------- SELECTED EMPLOYEE----------------------------------------")
+	fmt.Printf("%+v\n", selectedEmp)
 
 	//Get employee and asset ist from state
 	emplContainerbytes, err := stub.GetState("employees")

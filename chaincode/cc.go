@@ -205,6 +205,8 @@ func (t *SimpleChaincode) returnAsset(stub shim.ChaincodeStubInterface, args []s
 	fmt.Printf("-------------------------------------- REMOVING ASSET FROM EMPLOYE ,AFTER UPDATING EMPLOYEE CONTAINER---------------------------------------")
 	fmt.Printf("%+v\n", employeeContainer)
 
+	fmt.Printf("-------------------------------------- SELECT ASSET--------------------------------------")
+	fmt.Printf("%+v\n", selectedAsset)
 	//Also remove the emp id relation from the asset
 	for i := 0; i < len(assetContainer); i++ {
 		fmt.Printf("--------------------------------------SELECTED ASSET SERIALNO--------------------- %s-------------------------------------------", selectedAsset.SerialNo)
@@ -291,7 +293,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 		return t.assignAsset(stub, args)
 	} else if function == "returnAsset" {
 		// Transaction makes a return of assets
-		fmt.Printf("Function is debit")
+		fmt.Printf("Function is returnAsset")
 		return t.returnAsset(stub, args)
 	} else if function == "init" {
 		fmt.Printf("Function is init")

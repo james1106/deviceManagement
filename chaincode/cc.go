@@ -86,8 +86,8 @@ func (t *SimpleChaincode) assignAsset(stub shim.ChaincodeStubInterface, args []s
 	var assetContainer []Asset
 	var matchedEmpKey int
 	//store selected asset and selected employee
-	_ = json.Unmarshal([]byte(args[0]), selectedEmp)
-	_ = json.Unmarshal([]byte(args[1]), selectedAsset)
+	_ = json.Unmarshal([]byte(args[0]), &selectedEmp)
+	_ = json.Unmarshal([]byte(args[1]), &selectedAsset)
 	fmt.Printf("-------------------------------------- SELECTED EMPLOYEE----------------------------------------")
 	fmt.Printf("%+v\n", selectedEmp)
 
@@ -165,8 +165,8 @@ func (t *SimpleChaincode) returnAsset(stub shim.ChaincodeStubInterface, args []s
 	var matchedEmpAssetKey int
 	var matchedEmpKey int
 	//store selected asset and selected employee
-	_ = json.Unmarshal([]byte(args[0]), selectedEmp)
-	_ = json.Unmarshal([]byte(args[1]), selectedAsset)
+	_ = json.Unmarshal([]byte(args[0]), &selectedEmp)
+	_ = json.Unmarshal([]byte(args[1]), &selectedAsset)
 
 	//Get employee and asset ist from state
 	emplContainerbytes, err := stub.GetState("employees")
@@ -179,8 +179,8 @@ func (t *SimpleChaincode) returnAsset(stub shim.ChaincodeStubInterface, args []s
 	}
 
 	//convert back from bytes to perform operations
-	_ = json.Unmarshal([]byte(emplContainerbytes), employeeContainer)
-	_ = json.Unmarshal([]byte(assetContainerbytes), assetContainer)
+	_ = json.Unmarshal([]byte(emplContainerbytes), &employeeContainer)
+	_ = json.Unmarshal([]byte(assetContainerbytes), &assetContainer)
 
 	//finding the key of the selected asset to be removed from the selected employee
 	for i := 0; i < len(employeeContainer); i++ {

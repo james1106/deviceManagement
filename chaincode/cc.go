@@ -181,7 +181,10 @@ func (t *SimpleChaincode) returnAsset(stub shim.ChaincodeStubInterface, args []s
 	//convert back from bytes to perform operations
 	_ = json.Unmarshal([]byte(emplContainerbytes), &employeeContainer)
 	_ = json.Unmarshal([]byte(assetContainerbytes), &assetContainer)
-
+	fmt.Println("-----------------------------CURRENT EMPLOYEE CONATINER--------------------------------------------------")
+	fmt.Printf("%+v\n", employeeContainer)
+	fmt.Printf("-------------------------------------- CURRENT ASET CONTAINER----------------------------------------")
+	fmt.Printf("%+v\n", assetContainer)
 	//finding the key of the selected asset to be removed from the selected employee
 	for i := 0; i < len(employeeContainer); i++ {
 		if employeeContainer[i].ID == selectedEmp.ID {
@@ -201,6 +204,8 @@ func (t *SimpleChaincode) returnAsset(stub shim.ChaincodeStubInterface, args []s
 	a = a[:len(a)-1]*/
 	employeeContainer[matchedEmpKey].Assets[matchedEmpAssetKey] = employeeContainer[matchedEmpKey].Assets[len(employeeContainer[matchedEmpKey].Assets)-1]
 	employeeContainer[matchedEmpKey].Assets = employeeContainer[matchedEmpKey].Assets[:len(employeeContainer[matchedEmpKey].Assets)-1]
+	fmt.Printf("-------------------------------------- REMOVING ASSET FROM EMPLOYE ,AFTER UPDATING EMPLOYEE CONTAINER---------------------------------------")
+	fmt.Printf("%+v\n", employeeContainer)
 
 	//Also remove the emp id relation from the asset
 	for i := 0; i < len(assetContainer); i++ {
@@ -208,6 +213,8 @@ func (t *SimpleChaincode) returnAsset(stub shim.ChaincodeStubInterface, args []s
 			assetContainer[i].EmpID = ""
 		}
 	}
+	fmt.Printf("-------------------------------------- REMOVING EMPLOYEEiD FROM ASSETSCONATINER ,AFTER UPDATING ASSET CONTAINER---------------------------------------")
+	fmt.Printf("%+v\n", assetContainer)
 
 	/* Write the updated employee with "employees" key state to the ledger*/
 	empbytes, err := json.Marshal(employeeContainer)

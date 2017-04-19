@@ -19,12 +19,12 @@ type Asset struct {
 	Type     string `json:"type"`
 	Model    string `json:"model"`
 	SerialNo string `json:"serialNo"`
-	EmpID    int    `json:"empId"`
+	EmpID    string `json:"empId"`
 }
 
 // Employee to define employee structure
 type Employee struct {
-	ID     int     `json:"id"`
+	ID     string  `json:"id"`
 	Name   string  `json:"name"`
 	Assets []Asset `json:"assets"`
 }
@@ -111,8 +111,8 @@ func (t *SimpleChaincode) assignAsset(stub shim.ChaincodeStubInterface, args []s
 
 	//assigning selected asset to selected employee
 	for i := 0; i < len(employeeContainer); i++ {
-		fmt.Printf("---------------------employee id---------------%d--------", employeeContainer[i].ID)
-		fmt.Printf("---------------------selected employee id---------------%d--------", selectedEmp.ID)
+		fmt.Printf("---------------------employee id---------------%s--------", employeeContainer[i].ID)
+		fmt.Printf("---------------------selected employee id---------------%s--------", selectedEmp.ID)
 		if employeeContainer[i].ID == selectedEmp.ID {
 			selectedAsset.EmpID = employeeContainer[i].ID
 			employeeContainer[i].Assets = append(employeeContainer[i].Assets, selectedAsset)
@@ -205,7 +205,7 @@ func (t *SimpleChaincode) returnAsset(stub shim.ChaincodeStubInterface, args []s
 	//Also remove the emp id relation from the asset
 	for i := 0; i < len(assetContainer); i++ {
 		if assetContainer[i].SerialNo == selectedAsset.SerialNo {
-			assetContainer[i].EmpID = 0
+			assetContainer[i].EmpID = ""
 		}
 	}
 
@@ -298,6 +298,7 @@ func (t *SimpleChaincode) Invoke(stub shim.ChaincodeStubInterface, function stri
 	return nil, errors.New("Received unknown function invocation")
 }
 
+//Run method
 func (t *SimpleChaincode) Run(stub shim.ChaincodeStubInterface, function string, args []string) ([]byte, error) {
 	fmt.Printf("Run called, passing through to Invoke (same function)")
 

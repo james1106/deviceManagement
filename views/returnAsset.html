@@ -1,24 +1,29 @@
-<div class="container return-container">
+<div class="container return-container" style="padding-top: 50px;">
     <a href="#!/home">Back</a>
     <div class="col-lg 12">
         <div class='col-lg-6 form-control' style="height:40vh;margin:calc(10% - 20px) auto;width: calc(45%);margin-right: 20px;margin-left:50px;margin-bottom:15px;">
             <label class="view-device-label">Select Employee</label>
-            <select class="form-control" ng-model="device.make" ng-options="asset.make for asset in assets" style="display: inline;margin-top: 15px;width: 60%;"></select>
+            <select class="form-control" ng-model="employees" ng-options="emp.name for emp  in empList" style="display: inline;margin-top: 15px;width: 60%;"></select>
             </br>
             <div class="col-lg-3 form-control" style="height: 15vh;width: calc(60%);margin-left: 38%;margin-top: 5vh;">
-
+                <span ng-if="employees">Employee ID-</span> {{employees.id}}</br>
+                <span ng-if="employees">Assets assigned-</span>
+                <span ng-if="employees.assets.length == 0">None</span>
+                <span ng-if="employees.assets.length > 0" ng-repeat="assets in employees.assets">{{assets.serialNo}},</span></br>
             </div>
 
 
         </div>
         <div class='col-lg-6 form-control' style="height:40vh;margin:calc(10% - 20px) auto;width: calc(45%);margin-bottom:15px;">
             <label class="view-device-label">Select Device</label>
-            <select class="form-control" ng-model="device.type" ng-options="asset.type for asset in assets" style="display: inline;margin-top: 15px;width: 60%;"></select>
+            <select class="form-control" ng-model="device" ng-options="asset.type for asset in correspondingEmployeAssets" style="display: inline;margin-top: 15px;width: 60%;"></select>
             <div class="col-lg-3 form-control" style="height: 15vh;width: calc(60%);margin-left: 38%;margin-top: 5vh;">
-
+                    <span ng-if="device">Make -</span> {{device.make}}</br>
+                    <span ng-if="device">Model -</span> {{device.model}}</br>
+                     <span ng-if="device">Serial No -</span> {{device.serialNo}}            
             </div>
         </div>
-        <button class="btn btn-primary" style="margin-top:25px;margin-bottom: 25px;">Return</button>
+        <button class="btn btn-primary" style="margin-top:25px;margin-bottom: 25px;" ng-click="returnAsset(employees,device)">Return</button>
     </div>
 
 </div>

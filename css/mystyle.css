@@ -3,6 +3,7 @@ body {
     padding: 0px;
     background: #457fca;
     color: #333;
+    font-family: Cambria, Cochin, Georgia, Times, Times New Roman, serif;
 }
 .login-container {
     margin: calc(10% - 20px) auto;
@@ -69,4 +70,19 @@ margin:10px;
     text-align: center;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     min-height: calc(100vh - 0px);
+}
+ table {
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
 }

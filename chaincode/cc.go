@@ -175,6 +175,8 @@ func (t *SimpleChaincode) returnAsset(stub shim.ChaincodeStubInterface, args []s
 	if err != nil {
 		return nil, errors.New("Failed to get state")
 	}
+	fmt.Printf("-------------------------------------- SELECT ASSET--------------------------------------")
+	fmt.Printf("%+v\n", selectedAsset)
 
 	//convert back from bytes to perform operations
 	_ = json.Unmarshal([]byte(emplContainerbytes), &employeeContainer)
